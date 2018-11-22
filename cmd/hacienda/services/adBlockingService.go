@@ -14,14 +14,14 @@ type AdBlockingStatus struct {
 }
 
 // HandleAdBlockingStatus gets the current ad blocking status for a GET request or updates the ad
-// blocking status for a PATCH request.
+// blocking status for a PUT request.
 func HandleAdBlockingStatus(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		handleGet(w)
 		return
-	case "PATCH":
-		handlePatch(w, r)
+	case "PUT":
+		handlePut(w, r)
 		return
 	}
 
@@ -35,7 +35,7 @@ func handleGet(w http.ResponseWriter) {
 	enc.Encode(adBlockingStatus)
 }
 
-func handlePatch(w http.ResponseWriter, r *http.Request) {
+func handlePut(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var newAdBlockingStatus AdBlockingStatus
 	err := decoder.Decode(&newAdBlockingStatus)
@@ -44,7 +44,11 @@ func handlePatch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	updateAdBlockingStatus(newAdBlockingStatus)
+	currentAdblockingStatus := getAdBlockingStatus()
+	if currentAdblockingStatus.Disabled != newAdBlockingStatus.Disabled {
+		updateAdBlockingStatus(newAdBlockingStatus)
+	}
+
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -54,14 +58,13 @@ func getAdBlockingStatus() *AdBlockingStatus {
 	return parsed
 }
 
-// todo...
 func updateAdBlockingStatus(newAdBlockingStatus AdBlockingStatus) *AdBlockingStatus {
-	command := "enable"
+	args := []string{"enable"}
 	if newAdBlockingStatus.Disabled {
-		command = "disable"
+		args = []string{"disable", "300s"}
 	}
 
-	output, _ := exec.Command("pihole", command).Output()
+	output, _ := exec.Command("pihole", args...).Output()
 	return parseStatus(output)
 }
 
