@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os/exec"
+	"strings"
 )
 
 // An AdBlockingStatus represents a current or desired state of add blocking.
 type AdBlockingStatus struct {
-	Active bool // whether ad blocking is active
+	Disabled bool // whether ad blocking is disabled
 }
 
 // HandleAdBlockingStatus gets the current ad blocking status for a GET request or updates the ad
@@ -46,16 +48,26 @@ func handlePatch(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// todo...
 func getAdBlockingStatus() *AdBlockingStatus {
-	return &AdBlockingStatus{Active: false}
+	output, _ := exec.Command("pihole", "status").Output()
+	parsed := parseStatus(output)
+	return parsed
 }
 
 // todo...
-func updateAdBlockingStatus(newAdBlockingStatus AdBlockingStatus) {
-	if newAdBlockingStatus.Active {
-		fmt.Printf("turning ON")
-	} else {
-		fmt.Printf("turning OFF")
+func updateAdBlockingStatus(newAdBlockingStatus AdBlockingStatus) *AdBlockingStatus {
+	command := "enable"
+	if newAdBlockingStatus.Disabled {
+		command = "disable"
 	}
+
+	output, _ := exec.Command("pihole", command).Output()
+	return parseStatus(output)
+}
+
+func parseStatus(commandOutput []byte) *AdBlockingStatus {
+	status := string(commandOutput)
+	trimmedStatus := strings.TrimSpace(status)
+	disabled := strings.HasSuffix(trimmedStatus, "Disabled")
+	return &AdBlockingStatus{Disabled: disabled}
 }
