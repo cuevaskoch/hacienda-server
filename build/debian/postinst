@@ -1,0 +1,5 @@
+#!/bin/sh
+
+sudo systemctl enable hacienda.service
+sudo systemctl start hacienda.service
+sudo systemctl daemon-reload

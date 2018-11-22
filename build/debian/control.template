@@ -1,0 +1,6 @@
+Package: hacienda
+Version: ${VERSION}
+Maintainer: Jeff Cuevas-Koch <cuevaskoch@users.noreply.github.com>
+Architecture: armhf
+Description: hacienda is a collection of bespoke automation software for the Cuevas-Koch household.
+Build-Depends: dh-systemd

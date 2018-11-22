@@ -1,0 +1,5 @@
+#!/bin/sh
+
+sudo systemctl stop hacienda
+sudo systemctl disable hacienda
+sudo systemctl daemon-reload
