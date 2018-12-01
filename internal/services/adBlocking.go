@@ -13,9 +13,9 @@ type AdBlockingStatus struct {
 	Disabled bool // whether ad blocking is disabled
 }
 
-// HandleAdBlockingStatus gets the current ad blocking status for a GET request or updates the ad
+// HandleAdBlocking gets the current ad blocking status for a GET request or updates the ad
 // blocking status for a PUT request.
-func HandleAdBlockingStatus(w http.ResponseWriter, r *http.Request) {
+func HandleAdBlocking(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		handleGet(w)

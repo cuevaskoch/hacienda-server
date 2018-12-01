@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"github.com/jrkoch/hacienda-server/internal/services"
 
-	services "./services"
 )
 
 func main() {
 	http.HandleFunc("/", handleRoot)
-	http.HandleFunc("/ad-blocking", services.HandleAdBlockingStatus)
+	http.HandleFunc("/ad-blocking", services.HandleAdBlocking)
 	log.Fatal(http.ListenAndServe(":31337", nil))
 }
 
