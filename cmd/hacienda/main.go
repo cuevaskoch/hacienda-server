@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"github.com/jrkoch/hacienda-server/internal/services"
 
+	"github.com/gobuffalo/packr"
+	"github.com/jrkoch/hacienda-server/internal/services"
 )
 
 func main() {
@@ -15,5 +16,11 @@ func main() {
 }
 
 func handleRoot(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Welcome to Hacienda, where all things are possible.")
+	box := packr.NewBox("./html")
+	html, err := box.FindString("index.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Fprint(w, html)
 }

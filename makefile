@@ -1,13 +1,20 @@
 export VERSION=$(shell gogitver)
 ARTIFACT_PATH=./artifacts/hacienda
 
-.PHONY: build buildarm build-debian-package clean package
+.PHONY: build buildarm build-debian-package clean deps package
 
-build:
-	go build -o $(ARTIFACT_PATH) cmd/hacienda/main.go
+deps:
+	go get github.com/gobuffalo/packr/packr
 
-buildarm:
-	env GOOS=linux GOARCH=arm GOARM=5 go build -o $(ARTIFACT_PATH) cmd/hacienda/main.go
+build: deps
+	packr build -v ./cmd/hacienda
+	mkdir -p ./artifacts
+	mv ./hacienda $(ARTIFACT_PATH)
+
+buildarm: deps
+	env GOOS=linux GOARCH=arm GOARM=5 packr build ./cmd/hacienda
+	mkdir -p ./artifacts
+	mv ./hacienda $(ARTIFACT_PATH)
 
 clean:
 	rm -Rf ./artifacts
